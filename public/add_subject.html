@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Add Subject</title>
+</head>
+
+<body>
+    
+        <div class="jumbotron text-center">
+            <h3 class="text-center">Add Subject</h3>
+        </div>
+        <div class="container" id="addSubjectForm">
+        <form>
+            <div class="form-group">
+                <label for="subjectName">Enter Subject Name</label>
+                <input type="text" class="form-control" id="subjectName" name="subjectName" v-model="subjectName">
+            </div>
+            <label class="labelClass">Select Course:</label>
+            <select class="form-control" style="max-width:200px;" name="courseDropdown" id="courseDropdown" v-model="selected">
+                <option disabled value="">Select One</option>
+                <option v-bind:value='course.id' v-for="course in courses">
+                    {{course.courseName}}
+                </option>
+            </select>
+        </form>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-3"></div>
+            <div class="col-6">
+                <button id="btnSubjectAdd" class="btn btn-primary" v-on:click="addSubject">Add Subject</button>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+
+    <script>
+        let app = new Vue({
+            el: '#addSubjectForm',
+            data: {
+                subjectName: '',
+                courses: [],
+                selected: ''
+            },
+            mounted() {
+                this.getCourses();
+            },
+            methods: {
+                getCourses() {
+                    axios.get("http://localhost:3000/api/courses")
+                        .then((response) => {
+                            this.courses = response.data
+                        })
+                        .catch((err) => {
+                            console.log("Error in getting courses")
+                        })
+                },
+                addSubject() {
+                    axios.post("http://localhost:3000/api/subjects", {
+                        subjectName: this.subjectName,
+                        courseId: this.selected
+                    })
+                        .then((response) => {
+                            window.alert('Subject successfully added to curriculum!')
+                        })
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

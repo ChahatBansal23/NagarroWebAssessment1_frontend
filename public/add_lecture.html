@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Add Lecture</title>
+</head>
+
+<body>
+    
+        <div class="jumbotron text-center">
+            <h3 class="text-center">Add Lecture</h3>
+        </div>
+        <div class="container" id="addLectureForm">
+        <br/>
+        <br/>
+        <form>
+            <div class="form-group">
+                <label for="lectureName">Enter Lecture Name</label>
+                &nbsp;
+                <input type="text" class="form-control" style="max-width:200px;" id="lectureName" name="lectureName" v-model="lectureName">
+
+                <br/>
+
+                <label class="labelClass">Select Batch:</label>
+                &nbsp;
+                <select class="form-control" style="max-width:200px;" name="batchDropdown" id="batchDropdown" v-model="batchSelected">
+                    <option disabled value="">Select One</option>
+                    <option v-bind:value='batch.id' v-for="batch in batches">
+                        {{batch.batchName}}
+                    </option>
+                </select>
+                <br/>
+                <label class="labelClass">Select Subject:</label>
+                &nbsp;
+                <select class="form-control" style="max-width:200px;" name="subjectDropdown" id="subjectDropdown" v-model="subjectSelected">
+                    <option disabled value="">Select One</option>
+                    <option v-bind:value='subject.id' v-for="subject in subjects">
+                        {{subject.subjectName}}
+                    </option>
+                </select>
+                <br/>
+                <label class="labelClass">Select Teacher:</label>
+                &nbsp;
+                <select class="form-control" style="max-width:200px;" name="teacherDropdown" id="teacherDropdown" v-model="teacherSelected">
+                    <option disabled value="">Select One</option>
+                    <option v-bind:value='teacher.id' v-for="teacher in teachers">
+                        {{teacher.teacherName}}
+                    </option>
+                </select>
+        </form>
+        <br/>
+
+        <div class="row">
+            <div class="col-6">
+                <button id="btnLectureAdd" class="btn btn-primary" v-on:click="addLecture">Add Lecture</button>
+            </div>
+            <div class="col"></div>
+        </div>
+        </div>
+
+        <script>
+            let app = new Vue({
+                el: '#addLectureForm',
+                data: {
+                    lectureName: '',
+                    subjectSelected: '',
+                    batchSelected: '',
+                    teacherSelected: '',
+                    subjects: [],
+                    batches: [],
+                    teachers: []
+                },
+                mounted() {
+                    this.getBatches(),
+                        this.getSubjects(),
+                        this.getTeachers()
+                },
+                methods: {
+                    getBatches() {
+                        axios.get("http://localhost:3000/api/batches")
+                            .then((response) => {
+                                this.batches = response.data
+                            })
+                            .catch((err) => {
+                                console.log("Error in getting batches")
+                            })
+                    },
+                    getSubjects() {
+                        axios.get("http://localhost:3000/api/subjects")
+                            .then((response) => {
+                                this.subjects = response.data
+                            })
+                            .catch((err) => {
+                                console.log("Error in getting subjects")
+                            })
+                    },
+                    getTeachers() {
+                        axios.get("http://localhost:3000/api/teachers")
+                            .then((response) => {
+                                this.teachers = response.data
+                            })
+                            .catch((err) => {
+                                console.log("Error in getting teachers")
+                            })
+                    },
+                    addLecture() {
+                        axios.post("http://localhost:3000/api/lectures", {
+                            lectureName: this.lectureName,
+                            subjectId: this.subjectSelected,
+                            batchId: this.batchSelected,
+                            teacherId: this.teacherSelected
+                        })
+                            .then((response) => {
+                                window.alert('Lecture successfully added!')
+                            })
+                    }
+                }
+            })
+        </script>
+</body>
+
+</html>
